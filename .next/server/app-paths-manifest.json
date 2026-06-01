@@ -1,0 +1,5 @@
+{
+  "/api/coach/route": "app/api/coach/route.js",
+  "/video/page": "app/video/page.js",
+  "/api/generate/route": "app/api/generate/route.js"
+}
