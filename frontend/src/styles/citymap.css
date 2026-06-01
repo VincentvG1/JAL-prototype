@@ -1,0 +1,227 @@
+/* ─── CityMap screen ─────────────────────────────────────────────────────── */
+
+.citymap-shell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #f4f6fb;
+}
+
+/* Header */
+.citymap-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 68px;
+  background: linear-gradient(90deg, #1e3a5f 0%, #2d6be4 100%);
+  color: #fff;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.citymap-header-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.citymap-logo {
+  font-size: 2rem;
+  line-height: 1;
+}
+
+.citymap-heading {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.citymap-subheading {
+  margin: 2px 0 0;
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.citymap-badge {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+/* Map body */
+.citymap-body {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.citymap-map {
+  height: 100%;
+  width: 100%;
+}
+
+/* Leaflet container must have an explicit height */
+.citymap-map .leaflet-container {
+  height: 100%;
+  width: 100%;
+}
+
+/* Floating hint */
+.citymap-hint {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(6px);
+  border-radius: 24px;
+  padding: 10px 22px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+  z-index: 800;
+  white-space: nowrap;
+}
+
+/* Custom emoji markers */
+.map-marker {
+  width: 48px;
+  height: 48px;
+  border-radius: 50% 50% 50% 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  border: 2px solid rgba(255, 255, 255, 0.8);
+}
+
+.map-marker:hover {
+  transform: scale(1.15) translateY(-2px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+}
+
+.map-marker--selected {
+  transform: scale(1.2) translateY(-3px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.4);
+  border-color: #fff;
+  outline: 3px solid rgba(255, 255, 255, 0.6);
+}
+
+/* Side panel */
+.citymap-panel {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 340px;
+  background: #fff;
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.14);
+  z-index: 1000;
+  overflow-y: auto;
+  padding: 28px 24px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  animation: slideInPanel 0.28s cubic-bezier(0.2, 0.8, 0.3, 1) both;
+}
+
+@keyframes slideInPanel {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.citymap-panel-close {
+  align-self: flex-end;
+  background: #f0f2f5;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+  color: #555;
+  transition: background 0.15s;
+}
+
+.citymap-panel-close:hover {
+  background: #dde2ea;
+}
+
+.citymap-panel-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  align-self: flex-start;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+}
+
+.citymap-panel-title {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  line-height: 1.2;
+}
+
+.citymap-panel-subtitle {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--panel-color, #555);
+  font-weight: 600;
+}
+
+.citymap-panel-teaser {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #444;
+  line-height: 1.55;
+  flex: 1;
+}
+
+.citymap-panel-cta {
+  width: 100%;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  margin-top: auto;
+  letter-spacing: 0.01em;
+  transition: filter 0.15s, transform 0.1s;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+}
+
+.citymap-panel-cta:hover {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+.citymap-panel-cta:active {
+  transform: translateY(0);
+}

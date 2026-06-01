@@ -1,0 +1,960 @@
+/* ─── Reset ─────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ─── Base ───────────────────────────────────────────────────────────────── */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #f5f7fb;
+  color: #18212f;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#root {
+  height: 100vh;
+}
+
+/* ─── App shell — step bar + screen stacked vertically ───────────────────── */
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.app-screen {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ─── Layout ─────────────────────────────────────────────────────────────── */
+.mindmap-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.mindmap-layout {
+  display: flex;
+  height: 100%;
+}
+
+/* view-toggle lives inside .canvas-wrapper (position:relative) — bottom-right */
+.view-toggle-btn {
+  position: absolute;
+  bottom: 14px;
+  right: 14px;
+  z-index: 50;
+  background: #18212f;
+  color: #ffffff;
+  border: 1px solid #2c3a4e;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* In debug mode it lives inside .debug-dashboard (also position:relative) */
+.debug-dashboard .view-toggle-btn {
+  top: 14px;
+  right: 14px;
+}
+
+.view-toggle-btn:hover:not(:disabled) {
+  background: #111826;
+}
+
+.sidebar {
+  width: 300px;
+  min-width: 300px;
+  background: #ffffff;
+  border-right: 1px solid #dbe3ef;
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  overflow-y: auto;
+}
+
+.canvas-wrapper {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  width: 100%;
+}
+
+/* ─── Hidden voice input (mounted but invisible in product mode) ─────────── */
+.voice-hidden {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* ─── Listen button (top-left, inside ReactFlow Panel) ───────────────────── */
+.listen-btn {
+  background: linear-gradient(135deg, #1a304f 0%, #2563eb 100%);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 13px 26px;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  box-shadow: 0 4px 18px rgba(37, 99, 235, 0.35);
+  transition: transform 0.12s, box-shadow 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.listen-btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(37, 99, 235, 0.45);
+}
+
+.listen-btn.listening {
+  background: linear-gradient(135deg, #7f1d1d 0%, #dc2626 100%);
+  box-shadow: 0 4px 18px rgba(220, 38, 38, 0.40);
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+.listen-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ─── Sidebar heading ────────────────────────────────────────────────────── */
+.sidebar h1 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #0b63ce;
+}
+
+.hint {
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: #526075;
+}
+
+/* ─── Voice Input ────────────────────────────────────────────────────────── */
+.voice-input {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.voice-input textarea {
+  width: 100%;
+  min-height: 96px;
+  background: #f9fbff;
+  border: 1px solid #c7d4e6;
+  border-radius: 8px;
+  color: #18212f;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  padding: 10px 12px;
+  resize: vertical;
+  transition: border-color 0.15s;
+  font-family: inherit;
+}
+
+.voice-input textarea:focus {
+  outline: none;
+  border-color: #0b63ce;
+}
+
+.voice-input textarea:disabled {
+  opacity: 0.5;
+}
+
+.voice-input-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.transcription-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.transcription-item {
+  border: 1px solid #e3ebf7;
+  border-radius: 6px;
+  background: #fff;
+  padding: 7px 8px;
+}
+
+.transcription-time {
+  display: inline-block;
+  font-size: 0.7rem;
+  color: #526075;
+  margin-bottom: 4px;
+}
+
+.transcription-item p {
+  font-size: 0.79rem;
+  color: #18212f;
+  line-height: 1.35;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* ─── Buttons ────────────────────────────────────────────────────────────── */
+button {
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  font-size: 0.82rem;
+  font-family: inherit;
+  font-weight: 500;
+  padding: 8px 12px;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-mic {
+  flex-shrink: 0;
+  background: #eef4ff;
+  border: 1px solid #c8d9f2;
+  color: #1a304f;
+}
+
+.btn-mic:hover:not(:disabled) {
+  background: #dde9fd;
+}
+
+.btn-mic.active {
+  background: #0b63ce;
+  border-color: #0b63ce;
+  color: #fff;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.btn-submit {
+  flex: 1;
+  background: #0b63ce;
+  color: #fff;
+}
+
+.btn-submit:hover:not(:disabled) {
+  background: #0954ad;
+}
+
+.btn-secondary {
+  width: 100%;
+  text-align: left;
+  background: #f9fbff;
+  border: 1px solid #c7d4e6;
+  color: #1a304f;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #edf4ff;
+}
+
+.btn-danger {
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: 1px solid #f0cfd0;
+  color: #cc3c3c;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #fff3f3;
+}
+
+/* VoiceInput shown as a panel above the debug grid in debug mode */
+.voice-debug-panel {
+  flex-shrink: 0;
+  background: #ffffff;
+  border-bottom: 1px solid #dbe3ef;
+  padding: 12px 20px;
+}
+
+.debug-dashboard {
+  flex: 1;
+  min-height: 0;
+  padding: 54px 18px 18px;
+  background: linear-gradient(145deg, #f4f7fb 0%, #eef4ff 100%);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.debug-header h2 {
+  font-size: 1.35rem;
+  color: #18212f;
+}
+
+.debug-header p {
+  margin-top: 6px;
+  font-size: 0.82rem;
+  color: #526075;
+}
+
+.debug-grid {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+}
+
+.debug-panel {
+  background: #ffffff;
+  border: 1px solid #dbe3ef;
+  border-radius: 10px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.debug-panel h3 {
+  font-size: 0.84rem;
+  color: #1a304f;
+  margin-bottom: 8px;
+}
+
+.debug-empty {
+  font-size: 0.78rem;
+  color: #66758c;
+}
+
+.debug-log-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  overflow-y: auto;
+}
+
+.debug-log-list li {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #e3ebf7;
+  border-radius: 6px;
+  padding: 7px 8px;
+  font-size: 0.76rem;
+  color: #25354d;
+  line-height: 1.35;
+  background: #fbfdff;
+}
+
+.debug-log-time {
+  font-size: 0.69rem;
+  color: #526075;
+}
+
+.debug-meta {
+  font-size: 0.74rem;
+  color: #526075;
+  margin-bottom: 8px;
+}
+
+.debug-summary {
+  font-size: 0.77rem;
+  color: #273a57;
+  line-height: 1.4;
+  margin-bottom: 8px;
+}
+
+.hidden-mindmap-json {
+  border: 1px solid #e3ebf7;
+  border-radius: 8px;
+  background: #0f1725;
+  color: #dbe8ff;
+  padding: 10px;
+  font-size: 0.72rem;
+  line-height: 1.4;
+  overflow: auto;
+  flex: 1;
+}
+
+@media (max-width: 1100px) {
+  .debug-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+  }
+
+  .debug-panel {
+    min-height: 220px;
+  }
+}
+
+.sidebar-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ─── Brainstorm Chat Panel (BCP) ───────────────────────────────────────── */
+/* Floats inside .canvas-wrapper at top-right, just below the toggle button */
+
+.bcp {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 340px;
+  height: 440px;
+  z-index: 40;
+  background: #ffffff;
+  border: 1.5px solid #c9d6f0;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.bcp-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 16px 10px;
+  background: linear-gradient(120deg, #1a304f 0%, #2563eb 100%);
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.bcp-header-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bcp-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.bcp-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.bcp-tagline {
+  font-size: 0.74rem;
+  color: rgba(255,255,255,0.80);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.bcp-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+  min-height: 0;
+}
+
+.bcp-helpers {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bcp-empty {
+  font-size: 0.76rem;
+  color: #607086;
+  line-height: 1.5;
+}
+
+.bcp-answer-view {
+  padding: 2px 0;
+}
+
+.bcp-answer-text {
+  font-size: 0.875rem;
+  color: #18212f;
+  line-height: 1.6;
+}
+
+.bcp-answer-divider {
+  border: none;
+  border-top: 1.5px solid #dce4f5;
+  margin: 10px 0 8px;
+}
+
+.bcp-answer-footer {
+  font-size: 0.8rem;
+  color: #526075;
+  font-style: italic;
+}
+
+.bcp-typing {
+  display: flex;
+  gap: 5px;
+  padding: 6px 0;
+  align-items: center;
+}
+
+/* Re-use .typing-dot from exploration.css */
+.bcp .typing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #9aa5be;
+  animation: typingBounce 1.2s infinite;
+}
+
+.bcp .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.bcp .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+  40%           { transform: translateY(-5px); opacity: 1; }
+}
+
+/* Toggle switch */
+.bcp-toggle {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  background: #f4f7ff;
+  border-top: 1.5px solid #e0e8f8;
+  border-bottom: 1.5px solid #e0e8f8;
+  flex-shrink: 0;
+}
+
+.bcp-tab {
+  flex: 1;
+  padding: 7px 8px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  background: #ffffff;
+  color: #526075;
+  border: 1.5px solid #d0daf0;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.bcp-tab:first-child.bcp-tab--active {
+  background: #7c3aed;
+  color: #ffffff;
+  border-color: #7c3aed;
+}
+
+.bcp-tab:last-child.bcp-tab--active {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+.bcp-tab:hover:not(.bcp-tab--active) {
+  background: #eff2ff;
+  border-color: #b0bcf0;
+}
+
+/* Input row */
+.bcp-input-row {
+  display: flex;
+  gap: 6px;
+  padding: 8px 10px;
+  border-top: 1px solid #e8ecf4;
+  flex-shrink: 0;
+}
+
+.bcp-input {
+  flex: 1;
+  border: 1.5px solid #d0d7e6;
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 0.8rem;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s;
+}
+
+.bcp-input:focus {
+  border-color: #0b63ce;
+}
+
+.bcp-send {
+  background: #0b63ce;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+
+.bcp-send:disabled {
+  opacity: 0.35;
+}
+
+.bcp-send:hover:not(:disabled) {
+  background: #0954ad;
+}
+
+/* ─── Status messages ────────────────────────────────────────────────────── */
+.status {
+  font-size: 0.8rem;
+  padding: 7px 10px;
+  border-radius: 6px;
+}
+
+.status.loading {
+  background: #eaf3ff;
+  color: #0b63ce;
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+.status.recording {
+  background: #eefcf4;
+  color: #0f7a45;
+}
+
+.status.error {
+  background: #fff2f2;
+  color: #b42318;
+  word-break: break-word;
+}
+
+/* ─── Legend ─────────────────────────────────────────────────────────────── */
+.legend {
+  margin-top: auto;
+  padding-top: 10px;
+  border-top: 1px solid #dbe3ef;
+  font-size: 0.76rem;
+  color: #526075;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.dot.ai {
+  background: #0b63ce;
+}
+
+.dot.user {
+  background: #059669;
+}
+
+/* ─── Snippet / sticky-note cards ───────────────────────────────────────── */
+/* Color is set via inline style from STICKY_PALETTE; only structure here */
+.snippet-card {
+  width: 148px;
+  min-height: 80px;
+  border: 1.5px solid;
+  border-radius: 10px;
+  box-shadow: 2px 4px 14px rgba(0,0,0,0.14);
+  padding: 10px 12px;
+  cursor: grab;
+  transform: rotate(-1.2deg);
+}
+
+.snippet-card p {
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.35;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.snippet-card.selected {
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.35), 2px 4px 14px rgba(0,0,0,0.14);
+}
+
+/* ─── Card connection handles ─────────────────────────────────────────────── */
+.react-flow__node-snippet .react-flow__handle {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.8);
+  border: 2px solid #fff;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.react-flow__node-snippet:hover .react-flow__handle,
+.react-flow__node-snippet .react-flow__handle:hover {
+  opacity: 1;
+}
+
+/* ─── Inline edit textarea inside snippet card ────────────────────────────── */
+.snippet-edit-input {
+  width: 100%;
+  min-height: 56px;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1.35;
+  font-family: inherit;
+  word-break: break-word;
+  padding: 0;
+}
+
+/* ─── Edge / connection line styles ──────────────────────────────────────── */
+.react-flow__edge-path {
+  stroke: #94a3b8;
+  stroke-width: 2;
+}
+.react-flow__edge.selected .react-flow__edge-path {
+  stroke: #2563eb;
+}
+.react-flow__edge-interaction {
+  stroke-width: 10;
+  stroke: transparent;
+}
+
+/* Delete button that appears on selected edges */
+.edge-delete-btn {
+  background: #ef4444;
+  color: #fff;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  font-size: 15px;
+  line-height: 18px;
+  text-align: center;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  transition: background 0.12s ease, transform 0.1s ease;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.edge-delete-btn:hover {
+  background: #dc2626;
+  transform: scale(1.15);
+}
+
+/* ─── Step progress bar ──────────────────────────────────────────────────── */
+.step-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  height: 62px;
+  padding: 0 28px;
+  background: #ffffff;
+  border-bottom: 1px solid #e2e8f0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  z-index: 200;
+  gap: 0;
+}
+
+/* Each step + its trailing connector share a track */
+.step-bar-track {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+.step-bar-track:last-child {
+  flex: 0 0 auto;
+}
+
+.step-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+/* Numbered circle */
+.step-circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.78rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: box-shadow 0.2s ease;
+}
+.step-item--done .step-circle {
+  background: #22c55e;
+  color: #ffffff;
+}
+.step-item--active .step-circle {
+  background: linear-gradient(135deg, #2563eb 0%, #4f8ef7 100%);
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.18);
+}
+.step-item--upcoming .step-circle {
+  background: #e9eef6;
+  color: #94a3b8;
+}
+
+/* Label + hint text */
+.step-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.2;
+}
+.step-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.step-hint {
+  font-size: 0.66rem;
+}
+.step-item--done .step-label  { color: #64748b; }
+.step-item--done .step-hint   { color: #cbd5e1; }
+.step-item--active .step-label { color: #1d4ed8; }
+.step-item--active .step-hint  { color: #60a5fa; }
+.step-item--upcoming .step-label { color: #94a3b8; }
+.step-item--upcoming .step-hint  { color: #cbd5e1; }
+
+/* Horizontal line between steps */
+.step-connector {
+  flex: 1;
+  height: 2px;
+  border-radius: 1px;
+  margin: 0 12px;
+  min-width: 12px;
+}
+.step-connector--done     { background: #22c55e; }
+.step-connector--upcoming { background: #e2e8f0; }
+
+/* ─── Draggable note card (bottom-left panel) ────────────────────────────── */
+.note-create-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.note-drag-card {
+  width: 148px;
+  min-height: 76px;
+  border: 1.5px solid;
+  border-radius: 10px;
+  padding: 10px 12px;
+  cursor: grab;
+  opacity: 0.78;
+  box-shadow: 2px 4px 14px rgba(0,0,0,0.12);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  user-select: none;
+  transition: opacity 0.15s, transform 0.12s;
+}
+
+.note-drag-card:hover {
+  opacity: 0.92;
+  transform: rotate(-1.5deg) scale(1.03);
+}
+
+.note-drag-card:active {
+  cursor: grabbing;
+  opacity: 1;
+}
+
+.note-drag-icon {
+  font-size: 1.1rem;
+}
+
+.note-drag-hint {
+  font-size: 0.68rem;
+  line-height: 1.35;
+  opacity: 0.75;
+}
+
+/* ─── Colour swatches ─────────────────────────────────────────────────────── */
+.color-swatches {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.color-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2.5px solid;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+
+.color-swatch:hover {
+  transform: scale(1.18);
+}
+
+.color-swatch.active {
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.9), 0 0 0 5px rgba(37,99,235,0.5);
+  transform: scale(1.1);
+}
+
+/* ─── Ghost element created during drag ──────────────────────────────────── */
+.note-ghost {
+  position: fixed;
+  width: 120px;
+  height: 76px;
+  border: 1.5px solid;
+  border-radius: 10px;
+  opacity: 0.82;
+  pointer-events: none;
+  transform: rotate(-2deg) scale(1.06);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.22);
+  z-index: 9999;
+}
+.react-flow__background {
+  background: #f5f7fb;
+}
+
+/* Move controls to top-left, below the listen button */
+.react-flow__controls {
+  top: 78px;
+  left: 14px;
+  bottom: auto !important;
+}
+.react-flow__background {
+  background: #f5f7fb;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────────────── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.65; }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.45; }
+}
