@@ -8,7 +8,7 @@ import type { AIInsightsResponse } from '../types/mindmap';
 export interface UseAIKeywordsReturn {
   loading: boolean;
   error: string | null;
-  submitInput: (text: string, sessionId: string, mode?: 'analysis' | 'solution') => Promise<AIInsightsResponse>;
+  submitInput: (text: string, sessionId: string) => Promise<AIInsightsResponse>;
 }
 
 export function useAIKeywords(): UseAIKeywordsReturn {
@@ -16,11 +16,11 @@ export function useAIKeywords(): UseAIKeywordsReturn {
   const [error, setError] = useState<string | null>(null);
 
   const submitInput = useCallback(
-    async (text: string, sessionId: string, mode?: 'analysis' | 'solution'): Promise<AIInsightsResponse> => {
+    async (text: string, sessionId: string): Promise<AIInsightsResponse> => {
       setLoading(true);
       setError(null);
       try {
-        return await processInput(text, sessionId, mode);
+        return await processInput(text, sessionId);
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Unknown error';
         setError(message);

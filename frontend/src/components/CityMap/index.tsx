@@ -27,6 +27,19 @@ export function CityMap({ onSelectProblem }: CityMapProps) {
 
   return (
     <div className="citymap-shell">
+      <header className="citymap-header">
+        <div className="citymap-header-left">
+          <span className="citymap-logo">🏙️</span>
+          <div>
+            <h1 className="citymap-heading">Kies een probleem</h1>
+            <p className="citymap-subheading">
+              Klik op een locatie in Tilburg om een probleem te verkennen
+            </p>
+          </div>
+        </div>
+        <div className="citymap-badge">Junior AI League</div>
+      </header>
+
       <div className="citymap-body">
         <MapContainer
           center={TILBURG_CENTER}
