@@ -8,11 +8,12 @@ const API_BASE = '/api/ai';
 export async function processInput(
   text: string,
   sessionId: string,
+  mode?: 'analysis' | 'solution',
 ): Promise<AIInsightsResponse> {
   const response = await fetch(`${API_BASE}/process`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text, sessionId }),
+    body: JSON.stringify({ text, sessionId, mode }),
   });
 
   if (!response.ok) {
