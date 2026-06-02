@@ -21,7 +21,6 @@ import { KeywordNode, STICKY_PALETTE } from './KeywordNode';
 import { DeleteEdge } from './DeleteEdge';
 import { VoiceInput, type VoiceInputHandle } from './VoiceInput';
 import { BrainstormChatPanel } from './BrainstormChatPanel';
-import { TimerBanner as _TimerBanner, type MindmapMode } from './TimerBanner'; // unused — timer is now in StepProgressBar
 import { useAIKeywords } from '../hooks/useAIKeywords';
 import { clearSession } from '../services/aiService';
 import type { InsightContext, SnippetNodeData, SnippetSource, StickyColorId } from '../types/mindmap';
@@ -29,11 +28,28 @@ import type { InsightContext, SnippetNodeData, SnippetSource, StickyColorId } fr
 const nodeTypes: NodeTypes = { snippet: KeywordNode };
 const edgeTypes = { delete: DeleteEdge };
 
+const CLUSTER_CENTER_X = 460;
+const CLUSTER_CENTER_Y = 280;
+const BASE_RADIUS = 90;
+const RADIUS_STEP = 52;
+const ANGLE_GOLDEN = 137.5 * (Math.PI / 180);
+const JITTER = 18;
+
 const EMPTY_INSIGHT_CONTEXT: InsightContext = {
   rollingSummary: 'Nog geen samenvatting beschikbaar.',
   snippets: [],
   nextQuestions: [],
 };
+
+function clusterPosition(slotIndex: number): { x: number; y: number } {
+  const radiusBand = Math.floor(slotIndex / 7);
+  const radius = BASE_RADIUS + radiusBand * RADIUS_STEP;
+  const angle = slotIndex * ANGLE_GOLDEN;
+  return {
+    x: CLUSTER_CENTER_X + Math.cos(angle) * radius + (Math.random() - 0.5) * JITTER,
+    y: CLUSTER_CENTER_Y + Math.sin(angle) * radius + (Math.random() - 0.5) * JITTER,
+  };
+}
 
 // ─── DraggableNoteCard ────────────────────────────────────────────────────
 // Lives inside <ReactFlow> via Panel so useReactFlow() is accessible.
@@ -102,15 +118,13 @@ function DraggableNoteCard({ activeColor, onDrop, onColorChange }: DragCardProps
 
 interface MindmapCanvasProps {
   sessionId: string;
-  mode: MindmapMode;
-  onComplete: () => void;
 }
 
 type ViewMode = 'product' | 'debug';
 interface TranscriptionEntry { id: number; time: string; text: string; }
 interface DebugLogEntry { id: number; time: string; message: string; }
 
-export function MindmapCanvas({ sessionId, mode, onComplete }: MindmapCanvasProps) {
+export function MindmapCanvas({ sessionId }: MindmapCanvasProps) {
   const [nodes, setNodes, onNodesChange] = useNodesState<Node<SnippetNodeData>>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [viewMode, setViewMode] = useState<ViewMode>('product');
@@ -123,6 +137,7 @@ export function MindmapCanvas({ sessionId, mode, onComplete }: MindmapCanvasProp
   const voiceRef = useRef<VoiceInputHandle>(null);
   const transcriptionSeqRef = useRef(0);
   const debugSeqRef = useRef(0);
+  const snippetIdsRef = useRef<Set<string>>(new Set());
 
   const { loading, error, submitInput } = useAIKeywords();
 
@@ -138,15 +153,37 @@ export function MindmapCanvas({ sessionId, mode, onComplete }: MindmapCanvasProp
     ].slice(0, 50));
   }, []);
 
-  // Send transcription to AI — only updates brainstorm questions in the sidebar.
-  // AI cards are intentionally NOT added here; users place cards manually.
+  const addSnippetNodes = useCallback(
+    (snippets: string[], source: SnippetSource, color: StickyColorId = 'yellow') => {
+      const fresh = snippets.map(s => s.trim()).filter(s => s && !snippetIdsRef.current.has(s.toLowerCase()));
+      if (fresh.length === 0) return;
+      fresh.forEach(s => snippetIdsRef.current.add(s.toLowerCase()));
+      setNodes(current => {
+        const startIndex = current.length;
+        return [...current, ...fresh.map((label, i) => ({
+          id: `snippet-${Date.now()}-${i}`,
+          type: 'snippet' as const,
+          position: clusterPosition(startIndex + i),
+          data: { label, source, color },
+        }))];
+      });
+    },
+    [setNodes],
+  );
+
   const handleUserInput = useCallback(async (text: string) => {
-    pushDebugLog(`sending user input to AI (${text.length} chars) [mode=${mode}]`);
-    const result = await submitInput(text, sessionId, mode);
+    pushDebugLog(`sending user input to AI (${text.length} chars)`);
+    const result = await submitInput(text, sessionId);
     setLatestInsights(result);
     pushDebugLog(`rolling summary updated (${result.rollingSummary.length} chars)`);
+    if (result.snippets.length > 0) {
+      addSnippetNodes(result.snippets, 'ai', 'yellow');
+      pushDebugLog(`AI returned ${result.snippets.length} keywords`);
+    } else {
+      pushDebugLog('AI returned no keywords');
+    }
     pushDebugLog(`AI returned ${result.nextQuestions.length} brainstorm prompts`);
-  }, [submitInput, sessionId, mode, pushDebugLog]);
+  }, [submitInput, sessionId, addSnippetNodes, pushDebugLog]);
 
   const handleTranscription = useCallback((entry: { time: string; text: string }) => {
     transcriptionSeqRef.current += 1;
@@ -174,10 +211,15 @@ export function MindmapCanvas({ sessionId, mode, onComplete }: MindmapCanvasProp
     setEdges(eds => addEdge({ ...connection, type: 'delete' }, eds));
   }, [setEdges]);
 
+  const handleQuestionClick = useCallback((question: string) => {
+    pushDebugLog(`brainstorm helper selected: ${question}`);
+    void handleUserInput(question);
+  }, [handleUserInput, pushDebugLog]);
+
   const handleClear = useCallback(async () => {
     if (confirm('Wis alle kaartjes van het canvas en reset de sessie?')) {
       setNodes([]);
-      setEdges([]);
+      snippetIdsRef.current = new Set();
       setLatestInsights(EMPTY_INSIGHT_CONTEXT);
       setTranscriptions([]);
       setDebugLogs([]);
@@ -189,7 +231,7 @@ export function MindmapCanvas({ sessionId, mode, onComplete }: MindmapCanvasProp
         pushDebugLog(`failed to clear backend session: ${err instanceof Error ? err.message : 'unknown'}`);
       }
     }
-  }, [setNodes, setEdges, sessionId, pushDebugLog]);
+  }, [setNodes, sessionId, pushDebugLog]);
 
   useEffect(() => {
     if (error) pushDebugLog(`AI error: ${error}`);
@@ -222,22 +264,17 @@ export function MindmapCanvas({ sessionId, mode, onComplete }: MindmapCanvasProp
       {viewMode === 'product' ? (
         <div className="canvas-wrapper">
 
-          {/* Brainstorm sidebar — AI questions, top-right */}
+          {/* Brainstorm chat panel — top-right */}
           <BrainstormChatPanel
             helpers={latestInsights.nextQuestions}
+            onHelperClick={handleQuestionClick}
             disabled={loading}
+            rollingSummary={latestInsights.rollingSummary}
           />
-
-          {/* Timer is now in the top StepProgressBar — removed from here */}
 
           {/* Debug toggle — bottom-right */}
           <button className="view-toggle-btn" onClick={toggleView}>
             Open Debugging Dashboard
-          </button>
-
-          {/* Skip button — admin shortcut, bottom-right above debug btn */}
-          <button className="skip-step-btn" onClick={onComplete} title="Sla stap over (admin)">
-            ⏭ Sla over
           </button>
 
           <ReactFlow
