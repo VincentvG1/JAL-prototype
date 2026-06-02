@@ -36,7 +36,7 @@ export const KeywordNode = memo(function KeywordNode({
   }, [data.editing, data.label]);
 
   const commitEdit = () => {
-    const trimmed = editText.trim() || data.label || 'Nieuw idee';
+    const trimmed = editText.trim() || data.label || 'Nieuwe Notitie';
     updateNodeData(id, { label: trimmed, editing: false });
   };
 

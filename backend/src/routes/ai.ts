@@ -6,7 +6,7 @@ import { callOllama } from '../services/ollamaClient.js';
 const router = Router();
 
 router.post('/process', async (req: Request, res: Response) => {
-  const { text, sessionId } = req.body as { text?: string; sessionId?: string };
+  const { text, sessionId, mode = 'analysis' } = req.body as { text?: string; sessionId?: string; mode?: 'analysis' | 'solution' };
 
   if (!text?.trim() || !sessionId?.trim()) {
     res.status(400).json({ error: '`text` and `sessionId` are required' });
@@ -15,8 +15,8 @@ router.post('/process', async (req: Request, res: Response) => {
 
   try {
     const session = getSession(sessionId);
-    console.log(`[ai/process] starting insight extraction for session ${sessionId}`);
-    const systemPrompt = buildSystemPrompt(session);
+    console.log(`[ai/process] starting insight extraction for session ${sessionId} (mode=${mode})`);
+    const systemPrompt = buildSystemPrompt(session, mode);
     const result = await callOllama(systemPrompt, text.trim());
 
     const rollingSummary = typeof result.rollingSummary === 'string' ? result.rollingSummary.trim() : '';
