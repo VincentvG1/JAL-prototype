@@ -99,18 +99,20 @@ export async function callOllama(
   }
 }
 
-// Plain-text response — used by chatbot endpoints
+// Plain-text response — used by chatbot endpoints.
+// Pass jsonMode=true when the caller expects a JSON object back (e.g. the prompt coach).
 export async function callOllamaText(
   systemPrompt: string,
   userMessage: string,
   maxTokens = 150,
+  jsonMode = false,
 ): Promise<string> {
   return openAIFetch(
     [
       { role: 'system', content: systemPrompt },
       { role: 'user',   content: userMessage  },
     ],
-    false,   // plain text, no JSON mode
+    jsonMode,
     maxTokens,
   );
 }

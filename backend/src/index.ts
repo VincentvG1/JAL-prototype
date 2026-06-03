@@ -3,6 +3,7 @@ import cors from 'cors';
 import aiRouter from './routes/ai.js';
 import transcriptionRouter from './routes/transcription.js';
 import chatRouter from './routes/chat.js';
+import videoRouter from './routes/video.js';
 
 const app = express();
 const PORT = process.env.PORT ?? 3001;
@@ -12,6 +13,7 @@ app.use(express.json());
 
 app.use('/api/ai', aiRouter);
 app.use('/api/chat', chatRouter);
+app.use('/api/video', videoRouter);
 app.use('/api/transcribe', express.raw({ type: ['audio/webm', 'audio/webm;codecs=opus', 'audio/mp4', 'audio/ogg', 'audio/ogg;codecs=opus', 'application/octet-stream'], limit: '50mb' }), transcriptionRouter);
 
 app.get('/health', (_req, res) => {

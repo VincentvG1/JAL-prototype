@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { CityMap } from './components/CityMap';
 import { ProblemExploration } from './components/ProblemExploration';
 import { MindmapCanvas } from './components/MindmapCanvas';
+import { MakeSolutionStudio } from './components/solution/MakeSolutionStudio';
 import { StepProgressBar, type Screen } from './components/StepProgressBar';
 import type { Problem } from './types/journey';
 import './styles/app.css';
@@ -57,10 +58,7 @@ export default function App() {
           />
         )}
         {screen === 'make-solution' && (
-          <div className="present-placeholder">
-            <h2>🔨 Maak de oplossing</h2>
-            <p>Dit onderdeel is nog niet beschikbaar.</p>
-          </div>
+          <MakeSolutionStudio />
         )}
         {screen === 'present' && (
           <div className="present-placeholder">

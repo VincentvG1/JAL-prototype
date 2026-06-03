@@ -1,0 +1,34 @@
+{
+  "script": [
+    {
+      "humanPrompt": "een park met kinderen",
+      "isReadyForGeneration": false,
+      "tips": [
+        "Vertel wat de camera doet, bijvoorbeeld inzoomen of meebewegen.",
+        "Noem het moment van de dag en het licht, zoals zonsondergang of bewolkt.",
+        "Beschrijf minstens een duidelijke actie, bijvoorbeeld rennen of lachen."
+      ],
+      "enhancedPrompt": "Een groep kinderen speelt in een groen park in Tilburg, de camera beweegt langzaam naar voren terwijl ze rennen en lachen, warm middaglicht schijnt door de bomen en de sfeer is vrolijk en levendig."
+    },
+    {
+      "humanPrompt": "kinderen spelen in een park bij zonsondergang en de camera gaat langzaam naar voren",
+      "isReadyForGeneration": false,
+      "tips": [
+        "Voeg nog meer detail toe over de omgeving, zoals bomen, gras en achtergrond.",
+        "Beschrijf de stijl of sfeer, bijvoorbeeld filmisch, speels of dromerig.",
+        "Geef een extra bewegingsdetail, zoals bladeren die meewaaien."
+      ],
+      "enhancedPrompt": "Kinderen spelen en rennen in een stadspark met hoge bomen en een open grasveld, de camera maakt een langzame dolly-in, gouden zonsonderganglicht kleurt de lucht oranje en bladeren bewegen zacht in de wind in een filmische, warme sfeer."
+    },
+    {
+      "humanPrompt": "kinderen rennen in een groen park in tilburg, camera dolly in, gouden zonsondergang, bladeren waaien en alles voelt vrolijk en filmisch",
+      "isReadyForGeneration": true,
+      "tips": [
+        "Sterke prompt: onderwerp, camera en sfeer zijn duidelijk en concreet.",
+        "Je kunt nog toevoegen hoe dichtbij de camera start voor extra controle.",
+        "Gebruik eventueel een stijlwoord zoals 35mm of animatie-look als je wilt variëren."
+      ],
+      "enhancedPrompt": "In een groen park in Tilburg rennen lachende kinderen over het gras terwijl de camera met een rustige dolly-in dichterbij komt, gouden zonsonderganglicht schijnt tussen de bomen, bladeren waaien door de lucht en de hele scene voelt warm, vrolijk en filmisch aan."
+    }
+  ]
+}
