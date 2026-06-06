@@ -23,7 +23,7 @@ export function BrainstormChatPanel({
         <div className="bcp-helpers">
           {helpers.length === 0 ? (
             <p className="bcp-empty">
-              Vertel je idee via de microfoon. Dan verschijnen hier prikkelende denkvragen.
+              Begin met elkaar te overleggen, dan verschijnen hier hulpjes om jullie op weg te helpen!
             </p>
           ) : (
             helpers.slice(0, 3).map((q) => (
